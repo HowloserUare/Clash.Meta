@@ -1,9 +1,6 @@
 package inbound
 
 import (
-	"fmt"
-
-	"github.com/Dreamacro/clash/component/netstat"
 	C "github.com/Dreamacro/clash/constant"
 	"github.com/Dreamacro/clash/transport/socks5"
 )
@@ -13,12 +10,12 @@ func NewPacket(target socks5.Addr, packet C.UDPPacket, source C.Type, additions 
 	metadata := parseSocksAddr(target)
 	metadata.NetWork = C.UDP
 	metadata.Type = source
-	metadata.Process = netstat.LookupPort(metadata.SrcIP.String(), fmt.Sprint(metadata.SrcPort))
 	ApplyAdditions(metadata, WithSrcAddr(packet.LocalAddr()))
 	if p, ok := packet.(C.UDPPacketInAddr); ok {
 		ApplyAdditions(metadata, WithInAddr(p.InAddr()))
 	}
 	ApplyAdditions(metadata, additions...)
+	// metadata.Process = netstat.LookupPort(metadata.SrcIP.String(), fmt.Sprint(metadata.SrcPort))
 
 	return packet, metadata
 }

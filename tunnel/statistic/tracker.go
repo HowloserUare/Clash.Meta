@@ -1,6 +1,7 @@
 package statistic
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"net/netip"
@@ -11,6 +12,7 @@ import (
 	N "github.com/Dreamacro/clash/common/net"
 	"github.com/Dreamacro/clash/common/utils"
 	"github.com/Dreamacro/clash/component/mmdb"
+	"github.com/Dreamacro/clash/component/netstat"
 	C "github.com/Dreamacro/clash/constant"
 
 	"github.com/gofrs/uuid/v5"
@@ -142,6 +144,8 @@ func NewTCPTracker(conn C.Conn, manager *Manager, metadata *C.Metadata, rule C.R
 		metadata.GeoCountry = code[0]
 	}
 
+	metadata.Process = netstat.LookupPort(metadata.SrcIP.String(), fmt.Sprint(metadata.SrcPort))
+
 	t := &tcpTracker{
 		Conn:    conn,
 		manager: manager,
@@ -237,6 +241,9 @@ func NewUDPTracker(conn C.PacketConn, manager *Manager, metadata *C.Metadata, ru
 	if len(code) > 0 {
 		metadata.GeoCountry = code[0]
 	}
+
+	metadata.Process = netstat.LookupPort(metadata.SrcIP.String(), fmt.Sprint(metadata.SrcPort))
+
 	ut := &udpTracker{
 		PacketConn: conn,
 		manager:    manager,
