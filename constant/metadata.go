@@ -147,6 +147,9 @@ type Metadata struct {
 	SpecialProxy string     `json:"specialProxy"`
 	SpecialRules string     `json:"specialRules"`
 	RemoteDst    string     `json:"remoteDestination"`
+
+	GeoCountry string `json:"geoCountry"`
+
 	// Only domain rule
 	SniffHost string `json:"sniffHost"`
 }

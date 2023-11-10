@@ -10,6 +10,7 @@ import (
 	"github.com/Dreamacro/clash/common/buf"
 	N "github.com/Dreamacro/clash/common/net"
 	"github.com/Dreamacro/clash/common/utils"
+	"github.com/Dreamacro/clash/component/mmdb"
 	C "github.com/Dreamacro/clash/constant"
 
 	"github.com/gofrs/uuid/v5"
@@ -136,6 +137,11 @@ func NewTCPTracker(conn C.Conn, manager *Manager, metadata *C.Metadata, rule C.R
 		metadata.RemoteDst = parseRemoteDestination(conn.RemoteAddr(), conn)
 	}
 
+	code := mmdb.Instance().LookupCode(metadata.DstIP.AsSlice())
+	if len(code) > 0 {
+		metadata.GeoCountry = code[0]
+	}
+
 	t := &tcpTracker{
 		Conn:    conn,
 		manager: manager,
@@ -227,6 +233,10 @@ func (ut *udpTracker) Upstream() any {
 func NewUDPTracker(conn C.PacketConn, manager *Manager, metadata *C.Metadata, rule C.Rule, uploadTotal int64, downloadTotal int64, pushToManager bool) *udpTracker {
 	metadata.RemoteDst = parseRemoteDestination(nil, conn)
 
+	code := mmdb.Instance().LookupCode(metadata.DstIP.AsSlice())
+	if len(code) > 0 {
+		metadata.GeoCountry = code[0]
+	}
 	ut := &udpTracker{
 		PacketConn: conn,
 		manager:    manager,

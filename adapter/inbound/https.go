@@ -1,9 +1,11 @@
 package inbound
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 
+	"github.com/Dreamacro/clash/component/netstat"
 	C "github.com/Dreamacro/clash/constant"
 )
 
@@ -11,6 +13,7 @@ import (
 func NewHTTPS(request *http.Request, conn net.Conn, additions ...Addition) (net.Conn, *C.Metadata) {
 	metadata := parseHTTPAddr(request)
 	metadata.Type = C.HTTPS
+	metadata.Process = netstat.LookupPort(metadata.SrcIP.String(), fmt.Sprint(metadata.SrcPort))
 	ApplyAdditions(metadata, WithSrcAddr(conn.RemoteAddr()), WithInAddr(conn.LocalAddr()))
 	ApplyAdditions(metadata, additions...)
 	return conn, metadata
